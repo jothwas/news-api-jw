@@ -10,11 +10,11 @@ exports.fetchArticlesById = async (article_id) => {
     "SELECT * FROM articles WHERE article_id = $1;",
     [article_id]
   );
-  const user = rows[0];
-  if (!user)
+  const article = rows[0];
+  if (!article)
     return Promise.reject({
       status: 404,
       msg: "Not found, please check the article_id used and try again.",
     });
-  else return user;
+  else return article;
 };

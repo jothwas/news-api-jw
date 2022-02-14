@@ -26,7 +26,7 @@ describe("app", () => {
         });
     });
   });
-  describe.only("GET - /api/articles/:article_id", () => {
+  describe("GET - /api/articles/:article_id", () => {
     test("status: 200 - response with an object of the following fields for a specific article - author (taken from the username in users table), title, article_id, body, topic, created_at, votes", () => {
       return request(app)
         .get("/api/articles/1")
