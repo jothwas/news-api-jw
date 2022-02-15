@@ -28,12 +28,12 @@ describe("app", () => {
   });
   describe("/api/articles/:article_id", () => {
     describe("GET", () => {
-      test("status: 200 - response with an object of the following fields for a specific article - author (taken from the username in users table), title, article_id, body, topic, created_at, votes", () => {
+      test("status: 200 - responds with an object of the following fields for a specific article - author (taken from the username in users table), title, article_id, body, topic, created_at, votes", () => {
         return request(app)
           .get("/api/articles/1")
           .expect(200)
-          .then(({ body }) => {
-            expect(body).toEqual(
+          .then(({ body: { article } }) => {
+            expect(article).toEqual(
               expect.objectContaining({
                 author: expect.any(String),
                 title: expect.any(String),
@@ -44,6 +44,7 @@ describe("app", () => {
                 votes: expect.any(Number),
               })
             );
+            console.log;
           });
       });
       test("status: 400 - responds with error message if user attempts to use an invalid id", () => {
@@ -59,7 +60,7 @@ describe("app", () => {
           .get("/api/articles/938475")
           .expect(404)
           .then(({ body: { msg } }) => {
-            expect(msg).toBe("Not found, please check the url and try again.");
+            expect(msg).toBe("article not found");
           });
       });
     });
@@ -69,8 +70,8 @@ describe("app", () => {
           .patch("/api/articles/1")
           .send({ inc_votes: 1 })
           .expect(200)
-          .then(({ body }) => {
-            expect(body).toEqual(
+          .then(({ body: { article } }) => {
+            expect(article).toEqual(
               expect.objectContaining({
                 author: expect.any(String),
                 title: expect.any(String),
@@ -97,8 +98,8 @@ describe("app", () => {
           .patch("/api/articles/1")
           .send({})
           .expect(200)
-          .then(({ body }) => {
-            expect(body).toEqual(article1DataCopy);
+          .then(({ body: { article } }) => {
+            expect(article).toEqual(article1DataCopy);
           });
       });
       test("status: 200 - updates votes by the positive integer passed in the Patch request and returns the updated article", () => {
@@ -106,8 +107,8 @@ describe("app", () => {
           .patch("/api/articles/1")
           .send({ inc_votes: 10 })
           .expect(200)
-          .then(({ body }) => {
-            expect(body).toEqual({
+          .then(({ body: { article } }) => {
+            expect(article).toEqual({
               article_id: 1,
               title: "Living in the shadow of a great man",
               topic: "mitch",
@@ -123,8 +124,8 @@ describe("app", () => {
           .patch("/api/articles/1")
           .send({ inc_votes: -10 })
           .expect(200)
-          .then(({ body }) => {
-            expect(body).toEqual({
+          .then(({ body: { article } }) => {
+            expect(article).toEqual({
               article_id: 1,
               title: "Living in the shadow of a great man",
               topic: "mitch",
@@ -144,12 +145,21 @@ describe("app", () => {
             expect(msg).toBe("Bad request - invalid input");
           });
       });
+      test("status: 400 - responds with error message if user attempts to patch with wrong data type", () => {
+        return request(app)
+          .patch("/api/articles/1")
+          .send({ inc_votes: "bananas" })
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad request - invalid input");
+          });
+      });
       test("status: 404 - responds with error message if user attempts to search for an id that does not exist", () => {
         return request(app)
           .patch("/api/articles/938475")
           .expect(404)
           .then(({ body: { msg } }) => {
-            expect(msg).toBe("Not found, please check the url and try again.");
+            expect(msg).toBe("article not found");
           });
       });
     });
@@ -160,9 +170,7 @@ describe("app", () => {
         .get("/api/gobbledygook")
         .expect(404)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe(
-            "Invalid path, please check your url and try again."
-          );
+          expect(msg).toBe("Invalid path");
         });
     });
   });

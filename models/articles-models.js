@@ -10,7 +10,7 @@ exports.fetchArticlesById = async (article_id) => {
     [article_id]
   );
   const [article] = rows;
-  if (!article) return rejectedPromise404();
+  if (!article) return rejectedPromise404("article");
   else return article;
 };
 
@@ -20,6 +20,6 @@ exports.amendArticlesById = async (article_id, inc_votes = 0) => {
     [inc_votes, article_id]
   );
   const [updatedArticle] = rows;
-  if (!updatedArticle) return rejectedPromise404();
+  if (!updatedArticle) return rejectedPromise404("article");
   return updatedArticle;
 };

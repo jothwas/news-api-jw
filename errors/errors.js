@@ -12,11 +12,9 @@ exports.psqlErrorCodes = (err, req, res, next) => {
 
 exports.serverErrors = (err, req, res, next) => {
   console.log(err);
-  res.status(500).send({ msg: "Hello" });
+  res.status(500).send({ msg: "Internal Server Error" });
 };
 
 exports.error404 = (req, res) => {
-  return res
-    .status(404)
-    .send({ msg: "Invalid path, please check your url and try again." });
+  return res.status(404).send({ msg: "Invalid path" });
 };
