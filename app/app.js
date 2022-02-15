@@ -1,20 +1,23 @@
 const express = require("express");
 const app = express();
+const { getTopics } = require("../controllers/topics-controllers");
 const {
-  getTopics,
   getArticlesById,
-} = require("../controllers/topics-controllers");
+  patchArticlesById,
+} = require("../controllers/articles-controllers");
 const { error404, psqlErrorCodes, customErrors } = require("../errors/errors");
+app.use(express.json());
 
 /////// REQUESTS
 
 app.get("/api/topics", getTopics);
 app.get("/api/articles/:article_id", getArticlesById);
+app.patch("/api/articles/:article_id", patchArticlesById);
 
 /////// ERRORS
 
+app.all("/*", error404);
 app.use(customErrors);
 app.use(psqlErrorCodes);
-app.all("/*", error404);
 
 module.exports = app;
