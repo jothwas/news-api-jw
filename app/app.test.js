@@ -183,39 +183,48 @@ describe("app", () => {
           });
       });
     });
-    describe("/api/articles", () => {
-      describe("GET", () => {
-        test("status: 200 - responds with an array of article objects, each of which should have the following properties: author, title, article_id, topic, created_at, votes", () => {
-          return request(app)
-            .get("/api/articles")
-            .expect(200)
-            .then(({ body: { articles } }) => {
-              expect(articles).toHaveLength(12);
-              articles.forEach((article) => {
-                expect(article).toEqual(
-                  expect.objectContaining({
-                    article_id: expect.any(Number),
-                    author: expect.any(String),
-                    title: expect.any(String),
-                    topic: expect.any(String),
-                    created_at: expect.any(String),
-                    votes: expect.any(Number),
-                  })
-                );
-              });
-            });
-        });
-      });
-    });
-    describe("ERRORS", () => {
-      test("status: 404 responds with an error message when user attempts to reach an invalid path", () => {
+  });
+  describe("/api/articles", () => {
+    describe("GET", () => {
+      test("status: 200 - responds with an array of article objects, each of which should have the following properties: author, title, article_id, topic, created_at, votes", () => {
         return request(app)
-          .get("/api/gobbledygook")
-          .expect(404)
-          .then(({ body: { msg } }) => {
-            expect(msg).toBe("Invalid path");
+          .get("/api/articles")
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).toHaveLength(12);
+            articles.forEach((article) => {
+              expect(article).toEqual(
+                expect.objectContaining({
+                  article_id: expect.any(Number),
+                  author: expect.any(String),
+                  title: expect.any(String),
+                  topic: expect.any(String),
+                  created_at: expect.any(String),
+                  votes: expect.any(Number),
+                })
+              );
+            });
           });
       });
+      test("status: 200 - the article objects are all sorted in descending order by their date", () => {
+        return request(app)
+          .get("/api/articles")
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            console.log(articles);
+            expect(articles).toBeSortedBy("created_at", { descending: true });
+          });
+      });
+    });
+  });
+  describe("ERRORS", () => {
+    test("status: 404 responds with an error message when user attempts to reach an invalid path", () => {
+      return request(app)
+        .get("/api/gobbledygook")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Invalid path");
+        });
     });
   });
 });

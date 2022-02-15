@@ -25,6 +25,8 @@ exports.amendArticlesById = async (article_id, inc_votes = 0) => {
 };
 
 exports.fetchAllArticles = async () => {
-  const { rows } = await db.query("SELECT * FROM articles;");
+  const { rows } = await db.query(
+    "SELECT article_id, title, topic, author, created_at, votes FROM articles ORDER BY created_at DESC;"
+  );
   return rows;
 };
