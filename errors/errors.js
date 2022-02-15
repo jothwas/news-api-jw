@@ -11,7 +11,8 @@ exports.psqlErrorCodes = (err, req, res, next) => {
 };
 
 exports.serverErrors = (err, req, res, next) => {
-  res.status(500).send({ msg: "Internal Server Error" });
+  console.log(err);
+  res.status(500).send({ msg: "Hello" });
 };
 
 exports.error404 = (req, res) => {
