@@ -164,14 +164,33 @@ describe("app", () => {
       });
     });
   });
-  describe("ERRORS", () => {
-    test("status: 404 responds with an error message when user attempts to reach an invalid path", () => {
-      return request(app)
-        .get("/api/gobbledygook")
-        .expect(404)
-        .then(({ body: { msg } }) => {
-          expect(msg).toBe("Invalid path");
-        });
+  describe("/api/users", () => {
+    describe("GET", () => {
+      test("status: 200 - responds with an array of user objects, each of which should have a username property only", () => {
+        return request(app)
+          .get("/api/users")
+          .expect(200)
+          .then(({ body: { users } }) => {
+            expect(users).toHaveLength(4);
+            users.forEach((user) => {
+              expect(user).toEqual(
+                expect.objectContaining({
+                  username: expect.any(String),
+                })
+              );
+            });
+          });
+      });
+    });
+    describe("ERRORS", () => {
+      test("status: 404 responds with an error message when user attempts to reach an invalid path", () => {
+        return request(app)
+          .get("/api/gobbledygook")
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Invalid path");
+          });
+      });
     });
   });
 });
