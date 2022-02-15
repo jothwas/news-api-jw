@@ -4,6 +4,7 @@ const { getTopics } = require("../controllers/topics-controllers");
 const {
   getArticlesById,
   patchArticlesById,
+  getAllArticles,
 } = require("../controllers/articles-controllers");
 const { error404, psqlErrorCodes, customErrors } = require("../errors/errors");
 const { getUsers } = require("../controllers/users-controllers");
@@ -15,6 +16,7 @@ app.get("/api/topics", getTopics);
 app.get("/api/articles/:article_id", getArticlesById);
 app.patch("/api/articles/:article_id", patchArticlesById);
 app.get("/api/users", getUsers);
+app.get("/api/articles", getAllArticles);
 
 /////// ERRORS
 

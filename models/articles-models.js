@@ -23,3 +23,8 @@ exports.amendArticlesById = async (article_id, inc_votes = 0) => {
   if (!updatedArticle) return rejectedPromise404("article");
   return updatedArticle;
 };
+
+exports.fetchAllArticles = async () => {
+  const { rows } = await db.query("SELECT * FROM articles;");
+  return rows;
+};
