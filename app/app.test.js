@@ -45,8 +45,21 @@ describe("app", () => {
                 votes: expect.any(Number),
               })
             );
-            console.log;
           });
+      });
+      test.only('status: 200 - responds with an article object that has a proper of "comment_count" that shows the correct number of comments for that individual article', () => {
+        return request(app)
+          .get("/api/articles/1")
+          .expect(200)
+          .then(
+            ({
+              body: {
+                article: { comment_count },
+              },
+            }) => {
+              expect(comment_count).toBe(11);
+            }
+          );
       });
       test("status: 400 - responds with error message if user attempts to use an invalid id", () => {
         return request(app)
