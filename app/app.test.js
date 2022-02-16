@@ -29,7 +29,7 @@ describe("app", () => {
   });
   describe("/api/articles/:article_id", () => {
     describe("GET", () => {
-      test("status: 200 - responds with an object of the following fields for a specific article - author (taken from the username in users table), title, article_id, body, topic, created_at, votes", () => {
+      test("status: 200 - responds with an object of these fields for a specific article - author, title, article_id, body, topic, created_at, votes", () => {
         return request(app)
           .get("/api/articles/1")
           .expect(200)
@@ -45,8 +45,35 @@ describe("app", () => {
                 votes: expect.any(Number),
               })
             );
-            console.log;
           });
+      });
+      test('status: 200 - responds with an article object that has a "comment_count" property showing the correct number of comments for an article with comments', () => {
+        return request(app)
+          .get("/api/articles/1")
+          .expect(200)
+          .then(
+            ({
+              body: {
+                article: { comment_count },
+              },
+            }) => {
+              expect(comment_count).toBe(11);
+            }
+          );
+      });
+      test('status: 200 - responds with an article object that has a "comment_count" property with a value of 0 for an article without comments', () => {
+        return request(app)
+          .get("/api/articles/4")
+          .expect(200)
+          .then(
+            ({
+              body: {
+                article: { comment_count },
+              },
+            }) => {
+              expect(comment_count).toBe(0);
+            }
+          );
       });
       test("status: 400 - responds with error message if user attempts to use an invalid id", () => {
         return request(app)

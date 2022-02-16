@@ -5,9 +5,11 @@
   "main": "index.js",
   "scripts": {
     "setup-dbs": "psql -f ./db/setup.sql",
-    "seed": "node ./db/seeds/run-seed.js",
+    "seed-dev": "node ./db/seeds/run-seed.js",
+    "seed-test": "NODE_ENV=test node ./db/seeds/run-seed.js",
     "test": "jest",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "query": "psql -f ./query-test.sql > ./query-test.txt"
   },
   "repository": {
     "type": "git",
