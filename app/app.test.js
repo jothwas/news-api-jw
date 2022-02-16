@@ -243,13 +243,13 @@ describe("app", () => {
       });
     });
   });
-  describe("/api/articles/:article_id/comments", () => {
+  describe.only("/api/articles/:article_id/comments", () => {
     test('"status: 200 - responds with an array of comment objects, each of which should have the following properties: comment_id, votes, created_at, author, body', () => {
       return request(app)
         .get("/api/articles/1/comments")
         .expect(200)
         .then(({ body: { comments } }) => {
-          expect(comments).toHaveLength(12);
+          expect(comments).toHaveLength(11);
           comments.forEach((comment) => {
             expect(comment).toEqual(
               expect.objectContaining({
@@ -261,6 +261,15 @@ describe("app", () => {
               })
             );
           });
+        });
+    });
+    test('"status: 200 - responds with an empty array when an article has no comments', () => {
+      return request(app)
+        .get("/api/articles/4/comments")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          expect(comments).toHaveLength(0);
+          expect(comments).toEqual([]);
         });
     });
   });

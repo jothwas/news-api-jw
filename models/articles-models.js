@@ -35,7 +35,10 @@ exports.fetchAllArticles = async () => {
   return rows;
 };
 
-exports.fetchCommentsByArticleId = async () => {
-  const { rows: comments } = await db.query();
+exports.fetchCommentsByArticleId = async (article_id) => {
+  const { rows: comments } = await db.query(
+    "SELECT * FROM comments WHERE article_id = $1;",
+    [article_id]
+  );
   return comments;
 };
