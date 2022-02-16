@@ -34,3 +34,8 @@ exports.fetchAllArticles = async () => {
   );
   return rows;
 };
+
+exports.fetchCommentsByArticleId = async () => {
+  const { rows: comments } = await db.query();
+  return comments;
+};
