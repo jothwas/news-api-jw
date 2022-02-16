@@ -16,5 +16,5 @@ exports.serverErrors = (err, req, res, next) => {
 };
 
 exports.error404 = (req, res) => {
-  return res.status(404).send({ msg: "Invalid path" });
+  return res.status(404).send({ msg: "Path not found" });
 };

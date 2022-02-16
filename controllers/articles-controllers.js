@@ -1,6 +1,7 @@
 const {
   fetchArticlesById,
   amendArticlesById,
+  fetchAllArticles,
 } = require("../models/articles-models");
 
 exports.getArticlesById = (req, res, next) => {
@@ -15,5 +16,13 @@ exports.patchArticlesById = (req, res, next) => {
   const { inc_votes } = req.body;
   amendArticlesById(article_id, inc_votes)
     .then((updatedArticle) => res.status(200).send({ article: updatedArticle }))
+    .catch((err) => next(err));
+};
+
+exports.getAllArticles = (req, res, next) => {
+  fetchAllArticles()
+    .then((articles) => {
+      res.status(200).send({ articles });
+    })
     .catch((err) => next(err));
 };
