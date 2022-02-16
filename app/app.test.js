@@ -272,6 +272,14 @@ describe("app", () => {
           expect(comments).toEqual([]);
         });
     });
+    test("status:L 404 - returns 'Path not found' when searching for an article that doesn't exist", () => {
+      return request(app)
+        .get("/api/articles/123456/comments")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Path not found");
+        });
+    });
   });
   describe("ERRORS", () => {
     test("status: 404 responds with an error message when user attempts to reach an invalid path", () => {
