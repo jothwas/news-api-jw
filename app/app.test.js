@@ -222,7 +222,7 @@ describe("app", () => {
         .get("/api/gobbledygook")
         .expect(404)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe("Invalid path");
+          expect(msg).toBe("Path not found");
         });
     });
   });
