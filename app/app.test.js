@@ -277,7 +277,7 @@ describe("app", () => {
         .get("/api/articles/123456/comments")
         .expect(404)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe("Path not found");
+          expect(msg).toBe("article not found");
         });
     });
     test("status: 400 - responds with error message if user attempts to use an invalid article_id", () => {

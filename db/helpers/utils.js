@@ -1,3 +1,4 @@
+const { rejectedPromise404 } = require("../../errors/rejected-promises.js");
 const db = require("../connection.js");
 
 exports.convertTimestampToDate = ({ created_at, ...otherProperties }) => {
@@ -29,8 +30,6 @@ exports.checkArticleExists = (article_id) => {
       article_id,
     ])
     .then(({ rows }) => {
-      if (!rows.length) {
-        return Promise.reject({ status: 404, msg: "Path not found" });
-      }
+      if (!rows.length) return rejectedPromise404("article");
     });
 };
