@@ -59,7 +59,35 @@ describe("app", () => {
             }) => {
               expect(comment_count).toBe(11);
             }
-          );
+          )
+          .then(() => {
+            return request(app)
+              .get("/api/articles/4")
+              .expect(200)
+              .then(
+                ({
+                  body: {
+                    article: { comment_count },
+                  },
+                }) => {
+                  expect(comment_count).toBe(0);
+                }
+              );
+          })
+          .then(() => {
+            return request(app)
+              .get("/api/articles/9")
+              .expect(200)
+              .then(
+                ({
+                  body: {
+                    article: { comment_count },
+                  },
+                }) => {
+                  expect(comment_count).toBe(2);
+                }
+              );
+          });
       });
       test("status: 400 - responds with error message if user attempts to use an invalid id", () => {
         return request(app)
