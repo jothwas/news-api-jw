@@ -263,7 +263,7 @@ describe("app", () => {
           });
         });
     });
-    test('"status: 200 - responds with an empty array when an article has no comments', () => {
+    test("status: 200 - responds with an empty array when an article has no comments", () => {
       return request(app)
         .get("/api/articles/4/comments")
         .expect(200)
@@ -272,12 +272,20 @@ describe("app", () => {
           expect(comments).toEqual([]);
         });
     });
-    test("status:L 404 - returns 'Path not found' when searching for an article that doesn't exist", () => {
+    test("status: 404 - returns 'Path not found' when searching for an article that doesn't exist", () => {
       return request(app)
         .get("/api/articles/123456/comments")
         .expect(404)
         .then(({ body: { msg } }) => {
           expect(msg).toBe("Path not found");
+        });
+    });
+    test("status: 400 - responds with error message if user attempts to use an invalid article_id", () => {
+      return request(app)
+        .get("/api/articles/gobbledygook/comments")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Bad request - invalid input");
         });
     });
   });
