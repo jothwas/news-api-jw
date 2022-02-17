@@ -1,7 +1,6 @@
 const db = require("../db/connection.js");
 const {
   rejectedPromise404,
-  rejectedPatch,
   rejectedPromise400,
 } = require("../errors/rejected-promises.js");
 

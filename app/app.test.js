@@ -3,7 +3,6 @@ const app = require("./app.js");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed.js");
 const data = require("../db/data/test-data");
-const req = require("express/lib/request");
 
 beforeEach(() => seed(data));
 afterAll(() => db.end());

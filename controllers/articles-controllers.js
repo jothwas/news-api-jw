@@ -1,4 +1,3 @@
-const { sort } = require("../db/data/test-data/articles");
 const {
   fetchArticlesById,
   amendArticlesById,
