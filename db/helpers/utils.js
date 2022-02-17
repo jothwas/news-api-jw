@@ -1,3 +1,6 @@
+const { rejectedPromise404 } = require("../../errors/rejected-promises.js");
+const db = require("../connection.js");
+
 exports.convertTimestampToDate = ({ created_at, ...otherProperties }) => {
   if (!created_at) return { ...otherProperties };
   return { created_at: new Date(created_at), ...otherProperties };
@@ -19,4 +22,14 @@ exports.formatComments = (comments, idLookup) => {
       ...this.convertTimestampToDate(restOfComment),
     };
   });
+};
+
+exports.checkArticleExists = (article_id) => {
+  return db
+    .query("SELECT article_id FROM articles WHERE article_id = $1", [
+      article_id,
+    ])
+    .then(({ rows }) => {
+      if (!rows.length) return rejectedPromise404("article");
+    });
 };
