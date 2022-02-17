@@ -341,7 +341,31 @@ describe("app", () => {
             expect(msg).toBe("Bad request - invalid input");
           });
       });
-      test("status: 404 - returns an error message when posting with a non registered username", () => {
+      test("status: 400 - returns an error message when username is not provided", () => {
+        const testComment = {
+          comment: "this article is great!",
+        };
+        return request(app)
+          .post("/api/articles/1/comments")
+          .send(testComment)
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("username not found");
+          });
+      });
+      test("status: 400 - returns an error message when comment body is empty or not provided", () => {
+        const testComment = {
+          username: "butter_bridge",
+        };
+        return request(app)
+          .post("/api/articles/1/comments")
+          .send(testComment)
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toEqual("Bad request - missing information");
+          });
+      });
+      test("status: 400 - returns an error message when posting with a non registered username", () => {
         const testComment = {
           username: "fake_user",
           comment: "this article is great!",
@@ -349,7 +373,7 @@ describe("app", () => {
         return request(app)
           .post("/api/articles/1/comments")
           .send(testComment)
-          .expect(404)
+          .expect(400)
           .then(({ body: { msg } }) => {
             expect(msg).toEqual("username not found");
           });

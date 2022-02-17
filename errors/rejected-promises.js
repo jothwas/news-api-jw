@@ -4,3 +4,9 @@ exports.rejectedPromise404 = (field) => {
     msg: `${field} not found`,
   });
 };
+exports.rejectedPromise400 = (msg) => {
+  return Promise.reject({
+    status: 400,
+    msg,
+  });
+};
