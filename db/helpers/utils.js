@@ -33,3 +33,11 @@ exports.checkArticleExists = (article_id) => {
       if (!rows.length) return rejectedPromise404("article");
     });
 };
+
+exports.checkUserExists = (username) => {
+  return db
+    .query("SELECT username FROM users WHERE username = $1", [username])
+    .then(({ rows }) => {
+      if (!rows.length) return rejectedPromise404("username");
+    });
+};

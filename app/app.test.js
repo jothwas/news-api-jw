@@ -329,11 +329,29 @@ describe("app", () => {
           });
       });
       test("status: 400 - returns an error message when passed an invaid article_id", () => {
+        const testComment = {
+          username: "butter_bridge",
+          comment: "this article is great!",
+        };
         return request(app)
           .post("/api/articles/gobbledygook/comments")
+          .send(testComment)
           .expect(400)
           .then(({ body: { msg } }) => {
             expect(msg).toBe("Bad request - invalid input");
+          });
+      });
+      test("status: 404 - returns an error message when posting with a non registered username", () => {
+        const testComment = {
+          username: "fake_user",
+          comment: "this article is great!",
+        };
+        return request(app)
+          .post("/api/articles/1/comments")
+          .send(testComment)
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).toEqual("username not found");
           });
       });
     });

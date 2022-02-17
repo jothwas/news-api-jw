@@ -1,5 +1,8 @@
 const { use } = require("../app/app.js");
-const { checkArticleExists } = require("../db/helpers/utils.js");
+const {
+  checkArticleExists,
+  checkUserExists,
+} = require("../db/helpers/utils.js");
 const {
   fetchCommentsByArticleId,
   addCommentsByArticleId,
@@ -20,7 +23,8 @@ exports.getCommentsByArticleId = (req, res, next) => {
 exports.postCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
   const { username, comment } = req.body;
-  addCommentsByArticleId(article_id, username, comment)
+  checkUserExists(username)
+    .then(() => addCommentsByArticleId(article_id, username, comment))
     .then(([newComment]) => {
       res.status(201).send({ newComment });
     })
