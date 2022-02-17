@@ -258,49 +258,76 @@ describe("app", () => {
     });
   });
   describe("/api/articles/:article_id/comments", () => {
-    test('"status: 200 - responds with an array of comment objects, each of which should have the following properties: comment_id, votes, created_at, author, body', () => {
-      return request(app)
-        .get("/api/articles/1/comments")
-        .expect(200)
-        .then(({ body: { comments } }) => {
-          expect(comments).toHaveLength(11);
-          comments.forEach((comment) => {
-            expect(comment).toEqual(
+    describe("GET", () => {
+      test('"status: 200 - responds with an array of comment objects, each of which should have the following properties: comment_id, votes, created_at, author, body', () => {
+        return request(app)
+          .get("/api/articles/1/comments")
+          .expect(200)
+          .then(({ body: { comments } }) => {
+            expect(comments).toHaveLength(11);
+            comments.forEach((comment) => {
+              expect(comment).toEqual(
+                expect.objectContaining({
+                  comment_id: expect.any(Number),
+                  votes: expect.any(Number),
+                  created_at: expect.any(String),
+                  author: expect.any(String),
+                  body: expect.any(String),
+                })
+              );
+            });
+          });
+      });
+      test("status: 200 - responds with an empty array when an article has no comments", () => {
+        return request(app)
+          .get("/api/articles/4/comments")
+          .expect(200)
+          .then(({ body: { comments } }) => {
+            expect(comments).toHaveLength(0);
+            expect(comments).toEqual([]);
+          });
+      });
+      test("status: 404 - returns 'Path not found' when searching for an article that doesn't exist", () => {
+        return request(app)
+          .get("/api/articles/123456/comments")
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("article not found");
+          });
+      });
+      test("status: 400 - responds with error message if user attempts to use an invalid article_id", () => {
+        return request(app)
+          .get("/api/articles/gobbledygook/comments")
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad request - invalid input");
+          });
+      });
+    });
+    describe("POST", () => {
+      test("status: 201 - returns the added comment object", () => {
+        const testComment = {
+          username: "butter_bridge",
+          comment: "this article is great!",
+        };
+        return request(app)
+          .post("/api/articles/1/comments")
+          .send(testComment)
+          .expect(201)
+          .then(({ body: { newComment } }) => {
+            expect(newComment).toEqual(
               expect.objectContaining({
+                article_id: 1,
                 comment_id: expect.any(Number),
-                votes: expect.any(Number),
+                author: "butter_bridge",
+                body: "this article is great!",
+                votes: 0,
                 created_at: expect.any(String),
-                author: expect.any(String),
-                body: expect.any(String),
               })
             );
+            expect(newComment);
           });
-        });
-    });
-    test("status: 200 - responds with an empty array when an article has no comments", () => {
-      return request(app)
-        .get("/api/articles/4/comments")
-        .expect(200)
-        .then(({ body: { comments } }) => {
-          expect(comments).toHaveLength(0);
-          expect(comments).toEqual([]);
-        });
-    });
-    test("status: 404 - returns 'Path not found' when searching for an article that doesn't exist", () => {
-      return request(app)
-        .get("/api/articles/123456/comments")
-        .expect(404)
-        .then(({ body: { msg } }) => {
-          expect(msg).toBe("article not found");
-        });
-    });
-    test("status: 400 - responds with error message if user attempts to use an invalid article_id", () => {
-      return request(app)
-        .get("/api/articles/gobbledygook/comments")
-        .expect(400)
-        .then(({ body: { msg } }) => {
-          expect(msg).toBe("Bad request - invalid input");
-        });
+      });
     });
   });
   describe("ERRORS", () => {
