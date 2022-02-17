@@ -30,7 +30,12 @@ exports.amendArticlesById = async (article_id, inc_votes = 0) => {
 
 exports.fetchAllArticles = async () => {
   const { rows } = await db.query(
-    "SELECT article_id, title, topic, author, created_at, votes FROM articles ORDER BY created_at DESC;"
+    `SELECT a.article_id, a.title, a.topic, a.author, a.created_at, a.votes, 
+    COUNT (c.comment_id)::INT AS comment_count
+    FROM articles AS a 
+    LEFT JOIN comments AS c ON c.article_id = a.article_id
+    GROUP BY a.article_id
+    ORDER BY a.created_at DESC;`
   );
   return rows;
 };
