@@ -255,6 +255,34 @@ describe("app", () => {
             });
           });
       });
+      describe("QUERIES", () => {
+        test("status: 200 - accepts a sort_by query for any valid column, defaulted to created_at", () => {
+          return request(app)
+            .get("/api/articles?sort_by=title")
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles).toBeSortedBy("title", { descending: true });
+            })
+            .then(() => {
+              return request(app)
+                .get("/api/articles?sort_by=topic")
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                  expect(articles).toBeSortedBy("topic", { descending: true });
+                });
+            })
+            .then(() => {
+              return request(app)
+                .get("/api/articles?sort_by=comment_count")
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                  expect(articles).toBeSortedBy("comment_count", {
+                    descending: true,
+                  });
+                });
+            });
+        });
+      });
     });
   });
   describe("/api/articles/:article_id/comments", () => {

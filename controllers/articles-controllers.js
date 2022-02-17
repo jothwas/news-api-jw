@@ -1,3 +1,4 @@
+const { sort } = require("../db/data/test-data/articles");
 const {
   fetchArticlesById,
   amendArticlesById,
@@ -20,7 +21,8 @@ exports.patchArticlesById = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
-  fetchAllArticles()
+  const { sort_by } = req.query;
+  fetchAllArticles(sort_by)
     .then((articles) => {
       res.status(200).send({ articles });
     })

@@ -28,14 +28,24 @@ exports.amendArticlesById = async (article_id, inc_votes = 0) => {
   return updatedArticle;
 };
 
-exports.fetchAllArticles = async () => {
+exports.fetchAllArticles = async (sort_by = "created_at") => {
+  const validSortBys = [
+    "article_id",
+    "title",
+    "topic",
+    "author",
+    "body",
+    "created_at",
+    "votes",
+    "comment_count",
+  ];
   const { rows } = await db.query(
     `SELECT a.article_id, a.title, a.topic, a.author, a.created_at, a.votes, 
     COUNT (c.comment_id)::INT AS comment_count
     FROM articles AS a 
     LEFT JOIN comments AS c ON c.article_id = a.article_id
     GROUP BY a.article_id
-    ORDER BY a.created_at DESC;`
+    ORDER BY ${sort_by} DESC;`
   );
   return rows;
 };
