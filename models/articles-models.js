@@ -2,6 +2,7 @@ const db = require("../db/connection.js");
 const {
   rejectedPromise404,
   rejectedPatch,
+  rejectedPromise400,
 } = require("../errors/rejected-promises.js");
 
 exports.fetchArticlesById = async (article_id) => {
@@ -39,6 +40,9 @@ exports.fetchAllArticles = async (sort_by = "created_at") => {
     "votes",
     "comment_count",
   ];
+  if (!validSortBys.includes(sort_by))
+    return rejectedPromise400("Bad request: invalid sort_by query input");
+
   const { rows } = await db.query(
     `SELECT a.article_id, a.title, a.topic, a.author, a.created_at, a.votes, 
     COUNT (c.comment_id)::INT AS comment_count

@@ -282,6 +282,14 @@ describe("app", () => {
                 });
             });
         });
+        test("status: 400 - rejects an invalid sort_by", () => {
+          return request(app)
+            .get("/api/articles?sort_by=article_length")
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toEqual("Bad request: invalid sort_by query input");
+            });
+        });
       });
     });
   });
