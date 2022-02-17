@@ -1,4 +1,7 @@
-const { rejectedPromise404 } = require("../../errors/rejected-promises.js");
+const {
+  rejectedPromise404,
+  rejectedPromise400,
+} = require("../../errors/rejected-promises.js");
 const db = require("../connection.js");
 
 exports.convertTimestampToDate = ({ created_at, ...otherProperties }) => {
@@ -31,5 +34,13 @@ exports.checkArticleExists = (article_id) => {
     ])
     .then(({ rows }) => {
       if (!rows.length) return rejectedPromise404("article");
+    });
+};
+
+exports.checkUserExists = (username) => {
+  return db
+    .query("SELECT username FROM users WHERE username = $1", [username])
+    .then(({ rows }) => {
+      if (!rows.length) return rejectedPromise400("username not found");
     });
 };

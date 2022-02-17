@@ -5,8 +5,11 @@ exports.customErrors = (err, req, res, next) => {
 };
 
 exports.psqlErrorCodes = (err, req, res, next) => {
-  if (err.code === "22P02")
+  const { code } = err;
+  if (code === "22P02")
     return res.status(400).send({ msg: "Bad request - invalid input" });
+  if (code === "23502")
+    return res.status(400).send({ msg: "Bad request - missing information" });
   else next(err);
 };
 
