@@ -241,9 +241,23 @@ describe("app", () => {
             expect(articles).toBeSortedBy("created_at", { descending: true });
           });
       });
+      test("status: 200 - each article object has a 'comment_count' property with the number of comments for that article as its value", () => {
+        return request(app)
+          .get("/api/articles")
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            articles.forEach((article) => {
+              expect(article).toEqual(
+                expect.objectContaining({
+                  comment_count: expect.any(Number),
+                })
+              );
+            });
+          });
+      });
     });
   });
-  describe.only("/api/articles/:article_id/comments", () => {
+  describe("/api/articles/:article_id/comments", () => {
     test('"status: 200 - responds with an array of comment objects, each of which should have the following properties: comment_id, votes, created_at, author, body', () => {
       return request(app)
         .get("/api/articles/1/comments")
