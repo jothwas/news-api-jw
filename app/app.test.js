@@ -354,6 +354,19 @@ describe("app", () => {
             expect(msg).toEqual("username not found");
           });
       });
+      test("status: 404 - returns an error message when searching for an article_id that does not exist", () => {
+        const testComment = {
+          username: "butter_bridge",
+          comment: "this article is great!",
+        };
+        return request(app)
+          .post("/api/articles/99999/comments")
+          .send(testComment)
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("article not found");
+          });
+      });
     });
   });
   describe("ERRORS", () => {
