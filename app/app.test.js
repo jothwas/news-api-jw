@@ -287,7 +287,7 @@ describe("app", () => {
             .get("/api/articles?sort_by=article_length")
             .expect(400)
             .then(({ body: { msg } }) => {
-              expect(msg).toEqual("Bad request: invalid sort_by query input");
+              expect(msg).toEqual("Bad request: invalid query input");
             });
         });
         test("status: 200 - accepts a order query to order by asc or desc, defaulted to desc", () => {
@@ -308,6 +308,14 @@ describe("app", () => {
                     descending: true,
                   });
                 });
+            });
+        });
+        test("status: 400 - rejects an invalid order", () => {
+          return request(app)
+            .get("/api/articles?order=invalid_query")
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toEqual("Bad request: invalid query input");
             });
         });
       });

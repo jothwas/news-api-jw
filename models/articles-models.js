@@ -42,8 +42,8 @@ exports.fetchAllArticles = async (sort_by = "created_at", order = "desc") => {
   ];
   const validOrder = ["asc", "desc"];
 
-  if (!validSortBys.includes(sort_by))
-    return rejectedPromise400("Bad request: invalid sort_by query input");
+  if (!validSortBys.includes(sort_by) || !validOrder.includes(order))
+    return rejectedPromise400("Bad request: invalid query input");
 
   const { rows } = await db.query(
     `SELECT a.article_id, a.title, a.topic, a.author, a.created_at, a.votes, 
