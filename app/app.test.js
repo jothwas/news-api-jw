@@ -290,6 +290,26 @@ describe("app", () => {
               expect(msg).toEqual("Bad request: invalid sort_by query input");
             });
         });
+        test("status: 200 - accepts a order query to order by asc or desc, defaulted to desc", () => {
+          return request(app)
+            .get("/api/articles?order=asc")
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles).toBeSortedBy("created_at", {
+                descending: false,
+              });
+            })
+            .then(() => {
+              return request(app)
+                .get("/api/articles?order=desc")
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                  expect(articles).toBeSortedBy("created_at", {
+                    descending: true,
+                  });
+                });
+            });
+        });
       });
     });
   });

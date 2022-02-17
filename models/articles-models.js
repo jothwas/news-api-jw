@@ -29,7 +29,7 @@ exports.amendArticlesById = async (article_id, inc_votes = 0) => {
   return updatedArticle;
 };
 
-exports.fetchAllArticles = async (sort_by = "created_at") => {
+exports.fetchAllArticles = async (sort_by = "created_at", order = "desc") => {
   const validSortBys = [
     "article_id",
     "title",
@@ -40,6 +40,8 @@ exports.fetchAllArticles = async (sort_by = "created_at") => {
     "votes",
     "comment_count",
   ];
+  const validOrder = ["asc", "desc"];
+
   if (!validSortBys.includes(sort_by))
     return rejectedPromise400("Bad request: invalid sort_by query input");
 
@@ -49,7 +51,7 @@ exports.fetchAllArticles = async (sort_by = "created_at") => {
     FROM articles AS a 
     LEFT JOIN comments AS c ON c.article_id = a.article_id
     GROUP BY a.article_id
-    ORDER BY ${sort_by} DESC;`
+    ORDER BY ${sort_by} ${order};`
   );
   return rows;
 };
