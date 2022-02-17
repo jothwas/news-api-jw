@@ -318,7 +318,7 @@ describe("app", () => {
               expect(msg).toEqual("Bad request: invalid query input");
             });
         });
-        xtest("status: 200 - accepts a topic query and filters values by that topic", () => {
+        test("status: 200 - accepts a topic query and filters values by that topic", () => {
           return request(app)
             .get("/api/articles?topic=mitch")
             .expect(200)
@@ -326,7 +326,7 @@ describe("app", () => {
               expect(articles).toHaveLength(11);
             });
         });
-        xtest("status: 400 - rejects an invalid topic", () => {
+        test("status: 400 - rejects an invalid topic", () => {
           return request(app)
             .get("/api/articles?topic=potatoes")
             .expect(400)
