@@ -328,6 +328,14 @@ describe("app", () => {
             expect(newComment);
           });
       });
+      test("status: 400 - returns an error message when passed an invaid article_id", () => {
+        return request(app)
+          .post("/api/articles/gobbledygook/comments")
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad request - invalid input");
+          });
+      });
     });
   });
   describe("ERRORS", () => {
