@@ -318,6 +318,22 @@ describe("app", () => {
               expect(msg).toEqual("Bad request: invalid query input");
             });
         });
+        xtest("status: 200 - accepts a topic query and filters values by that topic", () => {
+          return request(app)
+            .get("/api/articles?topic=mitch")
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles).toHaveLength(11);
+            });
+        });
+        xtest("status: 400 - rejects an invalid topic", () => {
+          return request(app)
+            .get("/api/articles?topic=potatoes")
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toEqual("Bad request: invalid query input");
+            });
+        });
       });
     });
   });
