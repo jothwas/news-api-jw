@@ -4,6 +4,7 @@
   "description": "bc-nc-news",
   "main": "index.js",
   "scripts": {
+    "start": "node listen.js",
     "setup-dbs": "psql -f ./db/setup.sql",
     "seed-dev": "node ./db/seeds/run-seed.js",
     "seed-test": "NODE_ENV=test node ./db/seeds/run-seed.js",
@@ -11,8 +12,7 @@
     "prepare": "husky install",
     "query": "psql -f ./query-test.sql > ./query-test.txt",
     "seed:prod": "NODE_ENV=production DATABASE_URL=$(heroku config:get DATABASE_URL) npm run seed",
-    "seed": "node ./db/seeds/run-seed.js",
-    "start": "node listen.js"
+    "seed": "node ./db/seeds/run-seed.js"
   },
   "repository": {
     "type": "git",
