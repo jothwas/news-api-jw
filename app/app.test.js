@@ -529,6 +529,14 @@ describe("app", () => {
             expect(msg).toBe("Bad request - invalid input");
           });
       });
+      test("status: 404 - responds with error message when searching for a comment that does not exist", () => {
+        return request(app)
+          .delete("/api/comments/123455678")
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("comment not found");
+          });
+      });
     });
   });
   describe("ERRORS", () => {

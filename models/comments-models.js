@@ -1,4 +1,8 @@
 const db = require("../db/connection.js");
+const {
+  rejectedPromise400,
+  rejectedPromise404,
+} = require("../errors/rejected-promises.js");
 
 exports.fetchCommentsByArticleId = async (article_id) => {
   const { rows: comments } = await db.query(
