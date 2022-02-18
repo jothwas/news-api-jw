@@ -8,6 +8,19 @@ beforeEach(() => seed(data));
 afterAll(() => db.end());
 
 describe("app", () => {
+  describe("/api", () => {
+    describe("GET", () => {
+      test("status: 200 - sends user a list of all active endpoints they are able to use", () => {
+        return request(app)
+          .get("/api")
+          .expect(200)
+          .then(({ body: { endpoints } }) => {
+            const endPoints = Object.keys(JSON.parse(endpoints));
+            expect(endPoints).toHaveLength(9);
+          });
+      });
+    });
+  });
   describe("/api/topics", () => {
     test("status: 200 - responds with an array of topic objects, each of which should have a slug and description property", () => {
       return request(app)

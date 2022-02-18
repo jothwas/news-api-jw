@@ -18,12 +18,14 @@ const {
   postCommentsByArticleId,
   deleteCommentsById,
 } = require("../controllers/comments-controllers");
+const { getEndpoints } = require("../controllers/endpoint-request-controllers");
 app.use(express.json());
 
 /////// REQUESTS
 
 //// GET
 
+app.get("/api", getEndpoints);
 app.get("/api/topics", getTopics);
 app.get("/api/articles/:article_id", getArticlesById);
 app.get("/api/users", getUsers);
