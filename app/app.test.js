@@ -267,7 +267,9 @@ describe("app", () => {
                 .get("/api/articles?sort_by=topic")
                 .expect(200)
                 .then(({ body: { articles } }) => {
-                  expect(articles).toBeSortedBy("topic", { descending: true });
+                  expect(articles).toBeSortedBy("topic", {
+                    descending: true,
+                  });
                 });
             })
             .then(() => {
@@ -276,6 +278,16 @@ describe("app", () => {
                 .expect(200)
                 .then(({ body: { articles } }) => {
                   expect(articles).toBeSortedBy("comment_count", {
+                    descending: true,
+                  });
+                });
+            })
+            .then(() => {
+              return request(app)
+                .get("/api/articles")
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                  expect(articles).toBeSortedBy("created_at", {
                     descending: true,
                   });
                 });
