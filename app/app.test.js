@@ -15,7 +15,7 @@ describe("app", () => {
           .get("/api")
           .expect(200)
           .then(({ body: { endpoints } }) => {
-            const endPoints = Object.keys(JSON.parse(endpoints));
+            const endPoints = Object.keys(endpoints);
             expect(endPoints).toHaveLength(9);
           });
       });
