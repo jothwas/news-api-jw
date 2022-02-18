@@ -1,7 +1,7 @@
 const db = require("../db/connection.js");
 const {
   rejectedPromise404,
-  rejectedPatch,
+  rejectedPromise400,
 } = require("../errors/rejected-promises.js");
 
 exports.fetchArticlesById = async (article_id) => {
@@ -28,14 +28,46 @@ exports.amendArticlesById = async (article_id, inc_votes = 0) => {
   return updatedArticle;
 };
 
-exports.fetchAllArticles = async () => {
-  const { rows } = await db.query(
-    `SELECT a.article_id, a.title, a.topic, a.author, a.created_at, a.votes, 
-    COUNT (c.comment_id)::INT AS comment_count
-    FROM articles AS a 
-    LEFT JOIN comments AS c ON c.article_id = a.article_id
-    GROUP BY a.article_id
-    ORDER BY a.created_at DESC;`
-  );
+exports.fetchAllArticles = async (
+  sort_by = "created_at",
+  order = "desc",
+  topic
+) => {
+  const validSortBys = [
+    "article_id",
+    "title",
+    "topic",
+    "author",
+    "body",
+    "created_at",
+    "votes",
+    "comment_count",
+  ];
+  const validOrder = ["asc", "desc"];
+
+  if (!validSortBys.includes(sort_by) || !validOrder.includes(order))
+    return rejectedPromise400("Bad request: invalid query input");
+
+  let queryStr = `
+    SELECT a.article_id, a.title, a.topic, a.author, a.created_at, 
+    a.votes, COUNT(c.comment_id)::INT AS comment_count 
+    FROM articles AS a
+    LEFT JOIN comments AS c ON c.article_id = a.article_id`;
+
+  const topicValues = [];
+
+  if (topic) {
+    let { rows: acceptedTopics } = await db.query(`SELECT slug FROM topics;`);
+    acceptedTopics = acceptedTopics.map((topic) => topic.slug);
+    if (!acceptedTopics.includes(topic))
+      return rejectedPromise400("Bad request: invalid query input");
+
+    queryStr += ` WHERE a.topic = $1`;
+    topicValues.push(topic);
+  }
+  queryStr += ` GROUP BY a.article_id
+    ORDER BY ${sort_by} ${order};`;
+
+  const { rows } = await db.query(queryStr, topicValues);
   return rows;
 };

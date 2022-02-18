@@ -3,7 +3,6 @@ const app = require("./app.js");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed.js");
 const data = require("../db/data/test-data");
-const req = require("express/lib/request");
 
 beforeEach(() => seed(data));
 afterAll(() => db.end());
@@ -254,6 +253,86 @@ describe("app", () => {
               );
             });
           });
+      });
+      describe("QUERIES", () => {
+        test("status: 200 - accepts a sort_by query for any valid column, defaulted to created_at", () => {
+          return request(app)
+            .get("/api/articles?sort_by=title")
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles).toBeSortedBy("title", { descending: true });
+            })
+            .then(() => {
+              return request(app)
+                .get("/api/articles?sort_by=topic")
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                  expect(articles).toBeSortedBy("topic", { descending: true });
+                });
+            })
+            .then(() => {
+              return request(app)
+                .get("/api/articles?sort_by=comment_count")
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                  expect(articles).toBeSortedBy("comment_count", {
+                    descending: true,
+                  });
+                });
+            });
+        });
+        test("status: 400 - rejects an invalid sort_by", () => {
+          return request(app)
+            .get("/api/articles?sort_by=article_length")
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toEqual("Bad request: invalid query input");
+            });
+        });
+        test("status: 200 - accepts a order query to order by asc or desc, defaulted to desc", () => {
+          return request(app)
+            .get("/api/articles?order=asc")
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles).toBeSortedBy("created_at", {
+                descending: false,
+              });
+            })
+            .then(() => {
+              return request(app)
+                .get("/api/articles?order=desc")
+                .expect(200)
+                .then(({ body: { articles } }) => {
+                  expect(articles).toBeSortedBy("created_at", {
+                    descending: true,
+                  });
+                });
+            });
+        });
+        test("status: 400 - rejects an invalid order", () => {
+          return request(app)
+            .get("/api/articles?order=invalid_query")
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toEqual("Bad request: invalid query input");
+            });
+        });
+        test("status: 200 - accepts a topic query and filters values by that topic", () => {
+          return request(app)
+            .get("/api/articles?topic=mitch")
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles).toHaveLength(11);
+            });
+        });
+        test("status: 400 - rejects an invalid topic", () => {
+          return request(app)
+            .get("/api/articles?topic=potatoes")
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toEqual("Bad request: invalid query input");
+            });
+        });
       });
     });
   });

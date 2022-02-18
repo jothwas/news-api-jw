@@ -1,4 +1,3 @@
-const { use } = require("../app/app.js");
 const db = require("../db/connection.js");
 
 exports.fetchUsers = async () => {
