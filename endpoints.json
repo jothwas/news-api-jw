@@ -11,16 +11,107 @@
   },
   "GET /api/articles": {
     "description": "serves an array of all topics",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "queries": ["topic", "sort_by", "order"],
     "exampleResponse": {
       "articles": [
         {
+          "article_id": 1,
           "title": "Seafood substitutions are increasing",
           "topic": "cooking",
           "author": "weegembump",
-          "body": "Text from the article..",
-          "created_at": 1527695953341
+          "created_at": "2020-07-09 21:11:00",
+          "votes": 100
         }
+      ]
+    }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "serves an object with an array of values for the specified article, matched on the article_id parameter",
+    "queries": [],
+    "parameters": ["article_id"],
+    "exampleResponse": {
+      "article": [
+        {
+          "article_id": 1,
+          "title": "Living in the shadow of a great man",
+          "author": "butter_bridge",
+          "body": "I find this existence challenging",
+          "topic": "mitch",
+          "votes": 100,
+          "created_at": "2020-07-09 21:11:00"
+        }
+      ]
+    }
+  },
+  "PATCH /api/articles/:article_id/": {
+    "description": "Increases or decreses the 'votes' property for the specified article matched on article_id using the Patch body. The ammended article is then served as an object with an array of all properties and values for the specified article",
+    "queries": [],
+    "parameters": ["article_id"],
+    "request": { "inc_votes": 100 },
+    "exampleResponse": {
+      "article": [
+        {
+          "article_id": 1,
+          "title": "Living in the shadow of a great man",
+          "author": "butter_bridge",
+          "body": "I find this existence challenging",
+          "topic": "mitch",
+          "votes": 200,
+          "created_at": "2020-07-09 21:11:00"
+        }
+      ]
+    }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "Serves all comments for an article as an object with an array of comment objects. The comment objects contain the comment properties and values",
+    "queries": [],
+    "parameters": ["article_id"],
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 7,
+          "votes": 0,
+          "author": "icellusedkars",
+          "body": "Lobster pot",
+          "created_at": "2020-05-15 21:19:00"
+        },
+        {
+          "comment_id": 8,
+          "votes": 0,
+          "author": "icellusedkars",
+          "body": "Delicious crackerbreads  ",
+          "created_at": "2020-05-15 21:19:00"
+        }
+      ]
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "Posts a comment to the specific article and serves the newly created comment back as an object",
+    "queries": [],
+    "parameters": ["article_id"],
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 7,
+        "votes": 0,
+        "author": "icellusedkars",
+        "body": "Lobster pot",
+        "created_at": "2020-05-15 21:19:00"
+      }
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "Deletes the comment using the comment_id provided. This request not provide a response",
+    "queries": [],
+    "parameters": ["comment_id"]
+  },
+  "GET /api/users": {
+    "description": "Serves a users object with an array of all users and their properties",
+    "queries": [],
+    "parameters": [""],
+    "exampleResponse": {
+      "users": [
+        { "username": "butter_bridge" },
+        { "username": "icellusedkars" }
       ]
     }
   }
