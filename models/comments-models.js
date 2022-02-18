@@ -1,4 +1,8 @@
 const db = require("../db/connection.js");
+const {
+  rejectedPromise400,
+  rejectedPromise404,
+} = require("../errors/rejected-promises.js");
 
 exports.fetchCommentsByArticleId = async (article_id) => {
   const { rows: comments } = await db.query(
@@ -19,4 +23,12 @@ exports.addCommentsByArticleId = async (article_id, username, comment) => {
     [article_id, username, comment]
   );
   return newComment;
+};
+
+exports.removeCommentsById = async (comment_id) => {
+  const { rows } = await db.query(
+    `DELETE FROM comments WHERE comment_id = $1 RETURNING *`,
+    [comment_id]
+  );
+  if (!rows.length) return rejectedPromise404("comment");
 };
