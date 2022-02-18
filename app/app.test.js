@@ -521,6 +521,14 @@ describe("app", () => {
             expect(rows).toHaveLength(17);
           });
       });
+      test("status: 400 - responds with error message if user attempts to use an invalid comment_id", () => {
+        return request(app)
+          .delete("/api/comments/gobbledygook")
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad request - invalid input");
+          });
+      });
     });
   });
   describe("ERRORS", () => {
