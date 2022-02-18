@@ -502,6 +502,27 @@ describe("app", () => {
       });
     });
   });
+  describe("DELETE", () => {
+    describe("/api/comments/:comment_id", () => {
+      test("status: 204 -  deletes the given comment", () => {
+        return request(app)
+          .delete("/api/comments/1")
+          .expect(204)
+          .then(() => {
+            return db.query("SELECT * FROM comments WHERE comment_id = 1");
+          })
+          .then(({ rows }) => {
+            expect(rows).toHaveLength(0);
+          })
+          .then(() => {
+            return db.query("SELECT * FROM comments");
+          })
+          .then(({ rows }) => {
+            expect(rows).toHaveLength(17);
+          });
+      });
+    });
+  });
   describe("ERRORS", () => {
     test("status: 404 responds with an error message when user attempts to reach an invalid path", () => {
       return request(app)
