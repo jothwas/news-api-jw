@@ -347,6 +347,14 @@ describe("app", () => {
               expect(articles).toHaveLength(11);
             });
         });
+        test("status: 200 - accepts a topic query and filters values by that topic when that topic has no values but is valid", () => {
+          return request(app)
+            .get("/api/articles?topic=paper")
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles).toHaveLength(0);
+            });
+        });
         test("status: 400 - rejects an invalid topic", () => {
           return request(app)
             .get("/api/articles?topic=potatoes")
