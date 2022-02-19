@@ -22,7 +22,6 @@ const { getEndpoints } = require("../controllers/endpoint-request-controllers");
 const apiRouter = require("../routes/api-routers");
 app.use(express.json());
 
-app.get("/api/topics", getTopics);
 app.get("/api/users", getUsers);
 
 /////// ERRORS
