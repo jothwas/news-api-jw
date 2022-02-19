@@ -223,6 +223,24 @@ describe("app", () => {
       });
     });
   });
+  describe("/api/users/:username", () => {
+    describe("GET", () => {
+      test("status: 200 - responds with a user object containing a username, avatar_url and name for that particular user", () => {
+        return request(app)
+          .get("/api/users/butter_bridge")
+          .expect(200)
+          .then(({ body: { user } }) => {
+            expect(user).toEqual(
+              expect.objectContaining({
+                username: expect.any(String),
+                name: expect.any(String),
+                avatar_url: expect.any(String),
+              })
+            );
+          });
+      });
+    });
+  });
   describe("/api/articles", () => {
     describe("GET", () => {
       test("status: 200 - responds with an array of article objects, each of which should have the following properties: author, title, article_id, topic, created_at, votes", () => {
