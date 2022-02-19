@@ -239,6 +239,14 @@ describe("app", () => {
             );
           });
       });
+      test("status: 404 - responds with error if searching for a user that does not exist", () => {
+        return request(app)
+          .get("/api/users/the_phantom_of_the_opera")
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).toEqual("username not found");
+          });
+      });
     });
   });
   describe("/api/articles", () => {
