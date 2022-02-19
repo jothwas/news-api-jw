@@ -27,18 +27,7 @@ app.use(express.json());
 //// GET
 
 app.get("/api/topics", getTopics);
-app.get("/api/articles/:article_id", getArticlesById);
 app.get("/api/users", getUsers);
-app.get("/api/articles", getAllArticles);
-app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
-
-//// PATCH
-
-app.patch("/api/articles/:article_id", patchArticlesById);
-
-//// POST
-
-app.post("/api/articles/:article_id/comments", postCommentsByArticleId);
 
 //// DELETE
 
