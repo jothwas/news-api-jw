@@ -19,13 +19,13 @@ const {
   deleteCommentsById,
 } = require("../controllers/comments-controllers");
 const { getEndpoints } = require("../controllers/endpoint-request-controllers");
+const apiRouter = require("../routes/api-routers");
 app.use(express.json());
 
 /////// REQUESTS
 
 //// GET
 
-app.get("/api", getEndpoints);
 app.get("/api/topics", getTopics);
 app.get("/api/articles/:article_id", getArticlesById);
 app.get("/api/users", getUsers);
@@ -46,6 +46,7 @@ app.delete("/api/comments/:comment_id", deleteCommentsById);
 
 /////// ERRORS
 
+app.use("/api", apiRouter);
 app.all("/*", error404);
 app.use(customErrors);
 app.use(psqlErrorCodes);
