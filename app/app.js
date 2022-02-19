@@ -22,16 +22,8 @@ const { getEndpoints } = require("../controllers/endpoint-request-controllers");
 const apiRouter = require("../routes/api-routers");
 app.use(express.json());
 
-/////// REQUESTS
-
-//// GET
-
 app.get("/api/topics", getTopics);
 app.get("/api/users", getUsers);
-
-//// DELETE
-
-app.delete("/api/comments/:comment_id", deleteCommentsById);
 
 /////// ERRORS
 
