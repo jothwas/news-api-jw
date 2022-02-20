@@ -92,6 +92,18 @@ describe("app", () => {
             expect(msg).toEqual("Bad request - missing information");
           });
       });
+      test("status: 400 - returns an error if slug is wrong data type", () => {
+        return request(app)
+          .post("/api/topics")
+          .send({
+            slug: 1234,
+            description: "test, test, test",
+          })
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toEqual("Bad request - invalid input");
+          });
+      });
     });
   });
   describe("/api/articles/:article_id", () => {

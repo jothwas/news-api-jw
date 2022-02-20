@@ -7,8 +7,10 @@ exports.fetchTopics = async () => {
 };
 
 exports.sendTopic = async (slug, description) => {
-  if (!description)
+  if (!slug || !description)
     return rejectedPromise400("Bad request - missing information");
+  if (typeof slug !== "string")
+    return rejectedPromise400("Bad request - invalid input");
   const { rows } = await db.query(
     `INSERT INTO topics
   (slug, description)
