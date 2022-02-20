@@ -270,6 +270,39 @@ describe("app", () => {
           });
       });
     });
+    describe("DELETE", () => {
+      test("status: 204 -  deletes the given article", () => {
+        return request(app)
+          .delete("/api/articles/1")
+          .expect(204)
+          .then(() => {
+            return db.query("SELECT * FROM articles WHERE article_id = 1");
+          })
+          .then(({ rows }) => {
+            expect(rows).toHaveLength(0);
+            return db.query("SELECT * FROM articles");
+          })
+          .then(({ rows }) => {
+            expect(rows).toHaveLength(11);
+          });
+      });
+      test("status: 400 - responds with error message if user attempts to use an invalid article_id", () => {
+        return request(app)
+          .delete("/api/articles/gobbledygook")
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad request - invalid input");
+          });
+      });
+      test("status: 404 - responds with error message when searching for an article that does not exist", () => {
+        return request(app)
+          .delete("/api/articles/123455678")
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("article not found");
+          });
+      });
+    });
   });
   describe("/api/users", () => {
     describe("GET", () => {
@@ -616,7 +649,7 @@ describe("app", () => {
   });
   describe("/api/comments/:comment_id", () => {
     describe("DELETE", () => {
-      test("status: 204 -  deletes the given comment", () => {
+      test("status: 204 - deletes the given comment", () => {
         return request(app)
           .delete("/api/comments/1")
           .expect(204)
@@ -625,8 +658,6 @@ describe("app", () => {
           })
           .then(({ rows }) => {
             expect(rows).toHaveLength(0);
-          })
-          .then(() => {
             return db.query("SELECT * FROM comments");
           })
           .then(({ rows }) => {
