@@ -10,6 +10,10 @@ exports.psqlErrorCodes = (err, req, res, next) => {
     return res.status(400).send({ msg: "Bad request - invalid input" });
   if (code === "23502")
     return res.status(400).send({ msg: "Bad request - missing information" });
+  if (code === "23505")
+    return res
+      .status(400)
+      .send({ msg: "Bad request - information already exists" });
   else next(err);
 };
 
