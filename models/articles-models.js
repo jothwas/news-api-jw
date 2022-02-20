@@ -93,3 +93,20 @@ RETURNING *;`,
   insertedArticle.comment_count = 0;
   return insertedArticle;
 };
+
+exports.removeArticleById = async (article_id) => {
+  await db.query(
+    `ALTER TABLE comments
+      DROP CONSTRAINT comments_article_id_fkey,
+      ADD CONSTRAINT comments_article_id_fkey
+        FOREIGN KEY (article_id) REFERENCES articles(article_id)
+        ON DELETE CASCADE;`
+  );
+  const { rows } = await db.query(
+    `DELETE FROM articles 
+  WHERE article_id = $1
+  RETURNING *;`,
+    [article_id]
+  );
+  if (!rows.length) return rejectedPromise404("article");
+};
