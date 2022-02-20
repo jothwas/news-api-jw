@@ -71,3 +71,18 @@ exports.fetchAllArticles = async (
   const { rows } = await db.query(queryStr, topicValues);
   return rows;
 };
+
+exports.insertArticle = async (author, title, body, topic) => {
+  const { rows } = await db.query(
+    `
+  INSERT INTO articles
+  (author, title, body, topic)
+VALUES
+  ($1, $2, $3, $4)
+RETURNING *;`,
+    [author, title, body, topic]
+  );
+  const [insertedArticle] = rows;
+  insertedArticle.comment_count = 0;
+  return insertedArticle;
+};
