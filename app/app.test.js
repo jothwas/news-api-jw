@@ -22,21 +22,76 @@ describe("app", () => {
     });
   });
   describe("/api/topics", () => {
-    test("status: 200 - responds with an array of topic objects, each of which should have a slug and description property", () => {
-      return request(app)
-        .get("/api/topics")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body).toHaveLength(3);
-          body.forEach((topic) => {
+    describe("GET", () => {
+      test("status: 200 - responds with an array of topic objects, each of which should have a slug and description property", () => {
+        return request(app)
+          .get("/api/topics")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body).toHaveLength(3);
+            body.forEach((topic) => {
+              expect(topic).toEqual(
+                expect.objectContaining({
+                  description: expect.any(String),
+                  slug: expect.any(String),
+                })
+              );
+            });
+          });
+      });
+    });
+    describe("POST", () => {
+      test("status: 201 - returns the added topic", () => {
+        return request(app)
+          .post("/api/topics")
+          .send({
+            slug: "test_topic",
+            description: "I am a test topic",
+          })
+          .expect(201)
+          .then(({ body: { topic } }) => {
             expect(topic).toEqual(
               expect.objectContaining({
-                description: expect.any(String),
-                slug: expect.any(String),
+                slug: "test_topic",
+                description: "I am a test topic",
               })
             );
           });
-        });
+      });
+      test("status: 400 - returns an error if trying to POST to a topic name that already exists", () => {
+        return request(app)
+          .post("/api/topics")
+          .send({
+            slug: "mitch",
+            description: "i should have failed",
+          })
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toEqual("Bad request - information already exists");
+          });
+      });
+      test("status: 400 - returns an error if missing slug in request body", () => {
+        return request(app)
+          .post("/api/topics")
+          .send({
+            description: "i should have failed",
+          })
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toEqual("Bad request - missing information");
+          });
+      });
+      test("status: 400 - returns an error if missing description in request body", () => {
+        return request(app)
+          .post("/api/topics")
+          .send({
+            slug: "test",
+          })
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toEqual("Bad request - missing information");
+          });
+      });
     });
   });
   describe("/api/articles/:article_id", () => {
@@ -763,61 +818,6 @@ describe("app", () => {
           .expect(400)
           .then(({ body: { msg } }) => {
             expect(msg).toEqual("topic not found");
-          });
-      });
-    });
-  });
-  describe("/api/topics", () => {
-    describe("POST", () => {
-      xtest("status: 201 - returns the added topic", () => {
-        return request(app)
-          .post("/api/topics")
-          .send({
-            slug: "test_topic",
-            description: "I am a test topic",
-          })
-          .expect(201)
-          .then(({ body: { topic } }) => {
-            expect(topic).toEqual(
-              expect.objectContaining({
-                slug: expect.toEqual("test_topic"),
-                description: expect.toEqual("I am a test topic"),
-              })
-            );
-          });
-      });
-      xtest("status: 400 - returns an error if trying to POST to a topic name that already exists", () => {
-        return request(app)
-          .post("/api/topics")
-          .send({
-            slug: "mitch",
-            description: "i should have failed",
-          })
-          .expect(400)
-          .then(({ body: { msg } }) => {
-            expect(msg).toEqual("Bad request: topic already exists");
-          });
-      });
-      xtest("status: 400 - returns an error if missing slug in request body", () => {
-        return request(app)
-          .post("/api/topics")
-          .send({
-            description: "i should have failed",
-          })
-          .expect(400)
-          .then(({ body: { msg } }) => {
-            expect(msg).toEqual("Bad request - missing information");
-          });
-      });
-      xtest("status: 400 - returns an error if missing description in request body", () => {
-        return request(app)
-          .post("/api/topics")
-          .send({
-            slug: "mitch",
-          })
-          .expect(400)
-          .then(({ body: { msg } }) => {
-            expect(msg).toEqual("Bad request - missing information");
           });
       });
     });
