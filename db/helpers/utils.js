@@ -44,3 +44,11 @@ exports.checkUserExists = (username) => {
       if (!rows.length) return rejectedPromise400("username not found");
     });
 };
+
+exports.checkTopicExists = (topic) => {
+  return db
+    .query(`SELECT slug FROM topics WHERE slug = $1;`, [topic])
+    .then(({ rows }) => {
+      if (!rows.length) return rejectedPromise400("topic not found");
+    });
+};

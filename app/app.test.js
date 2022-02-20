@@ -681,6 +681,90 @@ describe("app", () => {
       });
     });
   });
+  describe("/api/articles", () => {
+    test("status: 201 - returns the added article ", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "icellusedkars",
+          title: "My test article",
+          body: "My test article body",
+          topic: "mitch",
+        })
+        .expect(201)
+        .then(({ body: { article } }) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              article_id: expect.any(Number),
+              title: "My test article",
+              author: "icellusedkars",
+              body: "My test article body",
+              topic: "mitch",
+              votes: 0,
+              created_at: expect.any(String),
+              comment_count: 0,
+            })
+          );
+        });
+    });
+    test("status: 400 - returns an error when missing items from the request body", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "icellusedkars",
+          body: "My test article body",
+          topic: "mitch",
+        })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toEqual("Bad request - missing information");
+        });
+    });
+    test("status: 400 - returns an error when wrong data type is provied in the request body", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "icellusedkars",
+          title: 1234,
+          body: "My test article body",
+          topic: "mitch",
+        })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toEqual(
+            "Bad request - invalid information in POST request"
+          );
+        });
+    });
+    test("status: 400 - returns an error when username is invalid", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "a_test_username",
+          title: "test title",
+          body: "My test article body",
+          topic: "mitch",
+        })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toEqual("username not found");
+        });
+    });
+    test("status: 400 - returns an error when topic is invalid", () => {
+      return request(app)
+        .post("/api/articles")
+        .send({
+          author: "icellusedkars",
+          title: "test title",
+          body: "My test article body",
+          topic: "potatoes",
+        })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toEqual("topic not found");
+        });
+    });
+  });
   describe("ERRORS", () => {
     test("status: 404 responds with an error message when user attempts to reach an invalid path", () => {
       return request(app)
