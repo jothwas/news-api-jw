@@ -1,3 +1,4 @@
+const { checkUserExists, checkTopicExists } = require("../db/helpers/utils");
 const {
   fetchArticlesById,
   amendArticlesById,
@@ -31,7 +32,8 @@ exports.getAllArticles = (req, res, next) => {
 
 exports.postArticle = (req, res, next) => {
   const { author, title, body, topic } = req.body;
-  insertArticle(author, title, body, topic)
+  Promise.all([checkUserExists(author), checkTopicExists(topic)])
+    .then(() => insertArticle(author, title, body, topic))
     .then((article) => {
       res.status(201).send({ article });
     })

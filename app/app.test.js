@@ -682,7 +682,7 @@ describe("app", () => {
     });
   });
   describe("/api/articles", () => {
-    test.only("status: 201 - returns the added article ", () => {
+    test("status: 201 - returns the added article ", () => {
       return request(app)
         .post("/api/articles")
         .send({
@@ -731,7 +731,9 @@ describe("app", () => {
         })
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toEqual("Bad request - invalid information posted");
+          expect(msg).toEqual(
+            "Bad request - invalid information in POST request"
+          );
         });
     });
     test("status: 400 - returns an error when username is invalid", () => {

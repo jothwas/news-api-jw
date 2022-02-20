@@ -73,6 +73,13 @@ exports.fetchAllArticles = async (
 };
 
 exports.insertArticle = async (author, title, body, topic) => {
+  if (
+    (title && typeof title !== "string") ||
+    (body && typeof body !== "string")
+  )
+    return rejectedPromise400(
+      "Bad request - invalid information in POST request"
+    );
   const { rows } = await db.query(
     `
   INSERT INTO articles
