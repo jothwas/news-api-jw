@@ -547,8 +547,8 @@ describe("app", () => {
       });
     });
   });
-  describe("DELETE", () => {
-    describe("/api/comments/:comment_id", () => {
+  describe("/api/comments/:comment_id", () => {
+    describe("DELETE", () => {
       test("status: 204 -  deletes the given comment", () => {
         return request(app)
           .delete("/api/comments/1")
@@ -577,6 +577,103 @@ describe("app", () => {
       test("status: 404 - responds with error message when searching for a comment that does not exist", () => {
         return request(app)
           .delete("/api/comments/123455678")
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("comment not found");
+          });
+      });
+    });
+  });
+  describe("/api/comments/comment_id", () => {
+    describe("PATCH", () => {
+      test("status: 200 - returns an object containing the specific fields requested", () => {
+        return request(app)
+          .patch("/api/comments/1")
+          .send({ inc_votes: 1 })
+          .expect(200)
+          .then(({ body: { comment } }) => {
+            expect(comment).toEqual(
+              expect.objectContaining({
+                comment_id: expect.any(Number),
+                body: expect.any(String),
+                article_id: expect.any(Number),
+                author: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+              })
+            );
+          });
+      });
+      test("status: 200 - returns the same object with no amends if passed no data in the patch", () => {
+        const comment1Data = {
+          comment_id: 1,
+          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          article_id: 9,
+          author: "butter_bridge",
+          created_at: "2020-04-06T12:17:00.000Z",
+          votes: 16,
+        };
+        return request(app)
+          .patch("/api/comments/1")
+          .send({})
+          .expect(200)
+          .then(({ body: { comment } }) => {
+            expect(comment).toEqual(comment1Data);
+          });
+      });
+      test("status: 200 - updates votes by the positive integer passed in the Patch request and returns the updated comment", () => {
+        return request(app)
+          .patch("/api/comments/1")
+          .send({ inc_votes: 1 })
+          .expect(200)
+          .then(({ body: { comment } }) => {
+            expect(comment).toEqual({
+              comment_id: 1,
+              body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+              article_id: 9,
+              author: "butter_bridge",
+              created_at: "2020-04-06T12:17:00.000Z",
+              votes: 17,
+            });
+          });
+      });
+      test("status: 200 - updates votes by the negative integer passed in the Patch request and returns the updated comment", () => {
+        return request(app)
+          .patch("/api/comments/1")
+          .send({ inc_votes: -1 })
+          .expect(200)
+          .then(({ body: { comment } }) => {
+            expect(comment).toEqual({
+              comment_id: 1,
+              body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+              article_id: 9,
+              author: "butter_bridge",
+              created_at: "2020-04-06T12:17:00.000Z",
+              votes: 15,
+            });
+          });
+      });
+      test("status: 400 - responds with error message if user attempts to use an invalid id", () => {
+        return request(app)
+          .patch("/api/comments/invalid_id")
+          .send({ inc_votes: 1 })
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad request - invalid input");
+          });
+      });
+      test("status: 400 - responds with error message if user attempts to patch with wrong data type", () => {
+        return request(app)
+          .patch("/api/comments/1")
+          .send({ inc_votes: "bananas" })
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toBe("Bad request - invalid input");
+          });
+      });
+      test("status: 404 - responds with error message if user attempts to search for an id that does not exist", () => {
+        return request(app)
+          .patch("/api/comments/938475")
           .expect(404)
           .then(({ body: { msg } }) => {
             expect(msg).toBe("comment not found");

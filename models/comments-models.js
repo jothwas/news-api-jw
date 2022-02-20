@@ -32,3 +32,13 @@ exports.removeCommentsById = async (comment_id) => {
   );
   if (!rows.length) return rejectedPromise404("comment");
 };
+
+exports.editCommentById = async (comment_id, inc_votes = 0) => {
+  const { rows } = await db.query(
+    "UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *;",
+    [inc_votes, comment_id]
+  );
+  if (!rows.length) return rejectedPromise404("comment");
+  const [updatedComment] = rows;
+  return updatedComment;
+};
