@@ -356,7 +356,7 @@ describe("app", () => {
           .get("/api/articles")
           .expect(200)
           .then(({ body: { articles } }) => {
-            expect(articles).toHaveLength(12);
+            expect(articles).toHaveLength(10);
             articles.forEach((article) => {
               expect(article).toEqual(
                 expect.objectContaining({
@@ -488,7 +488,7 @@ describe("app", () => {
               .get("/api/articles?topic=mitch")
               .expect(200)
               .then(({ body: { articles } }) => {
-                expect(articles).toHaveLength(11);
+                expect(articles).toHaveLength(10);
               });
           });
           test("status: 200 - accepts a topic query and filters values by that topic when that topic has no values but is valid", () => {
@@ -508,6 +508,132 @@ describe("app", () => {
               });
           });
         });
+      });
+      describe("PAGINATION", () => {
+        test("status: 200 - returns correct information when page query specified", () => {
+          return request(app)
+            .get("/api/articles?order=asc&sort_by=article_id&page=2")
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles[0]).toHaveProperty("article_id", 11);
+            });
+        });
+        test("status: 200 - returns correct information when limit query specified", () => {
+          return request(app)
+            .get("/api/articles?order=asc&sort_by=article_id&limit=2")
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles.length).toBe(2);
+            });
+        });
+        test("status 200: returns total_count of all matching results", () => {
+          return request(app)
+            .get("/api/articles?topic=mitch")
+            .expect(200)
+            .then(({ body: { total_count } }) => {
+              expect(total_count).toBe(11);
+            });
+        });
+        test("status: 400 - returns 400 error when invalid value for page", () => {
+          return request(app)
+            .get("/api/articles?page=gobbledegook")
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toBe("Bad request: invalid query input");
+            });
+        });
+        test("status: 400 - returns error when passed invalid value for limit", () => {
+          return request(app)
+            .get("/api/articles?limit=gobbledegook")
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toBe("Bad request: invalid query input");
+            });
+        });
+      });
+    });
+    describe("POST", () => {
+      test("status: 201 - returns the added article ", () => {
+        return request(app)
+          .post("/api/articles")
+          .send({
+            author: "icellusedkars",
+            title: "My test article",
+            body: "My test article body",
+            topic: "mitch",
+          })
+          .expect(201)
+          .then(({ body: { article } }) => {
+            expect(article).toEqual(
+              expect.objectContaining({
+                article_id: expect.any(Number),
+                title: "My test article",
+                author: "icellusedkars",
+                body: "My test article body",
+                topic: "mitch",
+                votes: 0,
+                created_at: expect.any(String),
+                comment_count: 0,
+              })
+            );
+          });
+      });
+      test("status: 400 - returns an error when missing items from the request body", () => {
+        return request(app)
+          .post("/api/articles")
+          .send({
+            author: "icellusedkars",
+            body: "My test article body",
+            topic: "mitch",
+          })
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toEqual("Bad request - missing information");
+          });
+      });
+      test("status: 400 - returns an error when wrong data type is provied in the request body", () => {
+        return request(app)
+          .post("/api/articles")
+          .send({
+            author: "icellusedkars",
+            title: 1234,
+            body: "My test article body",
+            topic: "mitch",
+          })
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toEqual(
+              "Bad request - invalid information in POST request"
+            );
+          });
+      });
+      test("status: 400 - returns an error when username is invalid", () => {
+        return request(app)
+          .post("/api/articles")
+          .send({
+            author: "a_test_username",
+            title: "test title",
+            body: "My test article body",
+            topic: "mitch",
+          })
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toEqual("username not found");
+          });
+      });
+      test("status: 400 - returns an error when topic is invalid", () => {
+        return request(app)
+          .post("/api/articles")
+          .send({
+            author: "icellusedkars",
+            title: "test title",
+            body: "My test article body",
+            topic: "potatoes",
+          })
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).toEqual("topic not found");
+          });
       });
     });
   });
@@ -775,92 +901,6 @@ describe("app", () => {
           .expect(404)
           .then(({ body: { msg } }) => {
             expect(msg).toBe("comment not found");
-          });
-      });
-    });
-  });
-  describe("/api/articles", () => {
-    describe("POST", () => {
-      test("status: 201 - returns the added article ", () => {
-        return request(app)
-          .post("/api/articles")
-          .send({
-            author: "icellusedkars",
-            title: "My test article",
-            body: "My test article body",
-            topic: "mitch",
-          })
-          .expect(201)
-          .then(({ body: { article } }) => {
-            expect(article).toEqual(
-              expect.objectContaining({
-                article_id: expect.any(Number),
-                title: "My test article",
-                author: "icellusedkars",
-                body: "My test article body",
-                topic: "mitch",
-                votes: 0,
-                created_at: expect.any(String),
-                comment_count: 0,
-              })
-            );
-          });
-      });
-      test("status: 400 - returns an error when missing items from the request body", () => {
-        return request(app)
-          .post("/api/articles")
-          .send({
-            author: "icellusedkars",
-            body: "My test article body",
-            topic: "mitch",
-          })
-          .expect(400)
-          .then(({ body: { msg } }) => {
-            expect(msg).toEqual("Bad request - missing information");
-          });
-      });
-      test("status: 400 - returns an error when wrong data type is provied in the request body", () => {
-        return request(app)
-          .post("/api/articles")
-          .send({
-            author: "icellusedkars",
-            title: 1234,
-            body: "My test article body",
-            topic: "mitch",
-          })
-          .expect(400)
-          .then(({ body: { msg } }) => {
-            expect(msg).toEqual(
-              "Bad request - invalid information in POST request"
-            );
-          });
-      });
-      test("status: 400 - returns an error when username is invalid", () => {
-        return request(app)
-          .post("/api/articles")
-          .send({
-            author: "a_test_username",
-            title: "test title",
-            body: "My test article body",
-            topic: "mitch",
-          })
-          .expect(400)
-          .then(({ body: { msg } }) => {
-            expect(msg).toEqual("username not found");
-          });
-      });
-      test("status: 400 - returns an error when topic is invalid", () => {
-        return request(app)
-          .post("/api/articles")
-          .send({
-            author: "icellusedkars",
-            title: "test title",
-            body: "My test article body",
-            topic: "potatoes",
-          })
-          .expect(400)
-          .then(({ body: { msg } }) => {
-            expect(msg).toEqual("topic not found");
           });
       });
     });

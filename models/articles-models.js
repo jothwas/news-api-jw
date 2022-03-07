@@ -1,4 +1,5 @@
 const db = require("../db/connection.js");
+const { topicData } = require("../db/data/test-data/index.js");
 const {
   rejectedPromise404,
   rejectedPromise400,
@@ -31,7 +32,9 @@ exports.amendArticlesById = async (article_id, inc_votes = 0) => {
 exports.fetchAllArticles = async (
   sort_by = "created_at",
   order = "desc",
-  topic
+  topic,
+  page = 1,
+  limit = 10
 ) => {
   const validSortBys = [
     "article_id",
@@ -45,7 +48,16 @@ exports.fetchAllArticles = async (
   ];
   const validOrder = ["asc", "desc"];
 
-  if (!validSortBys.includes(sort_by) || !validOrder.includes(order))
+  const offset = (page - 1) * limit;
+
+  let total_count = 0;
+
+  if (
+    !validSortBys.includes(sort_by) ||
+    !validOrder.includes(order) ||
+    isNaN(page) ||
+    isNaN(limit)
+  )
     return rejectedPromise400("Bad request: invalid query input");
 
   let queryStr = `
@@ -64,12 +76,31 @@ exports.fetchAllArticles = async (
 
     queryStr += ` WHERE a.topic = $1`;
     topicValues.push(topic);
+    queryStr += ` GROUP BY a.article_id
+    ORDER BY ${sort_by} ${order}`;
+    const topicResponse = await db.query(queryStr, topicValues);
+    total_count += topicResponse.rows.length;
+    queryStr += ` LIMIT $2 OFFSET $3;`;
+  } else {
+    queryStr += ` GROUP BY a.article_id
+    ORDER BY ${sort_by} ${order}`;
+    const nonTopicResponse = await db.query(queryStr);
+    total_count += nonTopicResponse.rows.length;
+    queryStr += ` LIMIT $1 OFFSET $2;`;
   }
-  queryStr += ` GROUP BY a.article_id
-    ORDER BY ${sort_by} ${order};`;
 
-  const { rows } = await db.query(queryStr, topicValues);
-  return rows;
+  if (topic) {
+    const [topicValue] = topicValues;
+    const { rows: articles } = await db.query(queryStr, [
+      topicValue,
+      limit,
+      offset,
+    ]);
+    return { articles, total_count };
+  } else {
+    const { rows: articles } = await db.query(queryStr, [limit, offset]);
+    return { articles, total_count };
+  }
 };
 
 exports.insertArticle = async (author, title, body, topic) => {
