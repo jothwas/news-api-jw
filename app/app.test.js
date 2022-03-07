@@ -356,7 +356,7 @@ describe("app", () => {
           .get("/api/articles")
           .expect(200)
           .then(({ body: { articles } }) => {
-            expect(articles).toHaveLength(12);
+            expect(articles).toHaveLength(10);
             articles.forEach((article) => {
               expect(article).toEqual(
                 expect.objectContaining({
@@ -488,7 +488,7 @@ describe("app", () => {
               .get("/api/articles?topic=mitch")
               .expect(200)
               .then(({ body: { articles } }) => {
-                expect(articles).toHaveLength(11);
+                expect(articles).toHaveLength(10);
               });
           });
           test("status: 200 - accepts a topic query and filters values by that topic when that topic has no values but is valid", () => {
@@ -507,6 +507,48 @@ describe("app", () => {
                 expect(msg).toEqual("Bad request: invalid query input");
               });
           });
+        });
+      });
+      describe("PAGINATION", () => {
+        test("status: 200 - returns correct information when page query specified", () => {
+          return request(app)
+            .get("/api/articles?order=asc&sort_by=article_id&page=2")
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles[0]).toHaveProperty("article_id", 11);
+            });
+        });
+        test("status: 200 - returns correct information when limit query specified", () => {
+          return request(app)
+            .get("/api/articles?order=asc&sort_by=article_id&limit=2")
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles.length).toBe(2);
+            });
+        });
+        test("status 200: returns total_count of all matching results", () => {
+          return request(app)
+            .get("/api/articles?topic=mitch")
+            .expect(200)
+            .then(({ body: { total_count } }) => {
+              expect(total_count).toBe(11);
+            });
+        });
+        test("status: 400 - returns 400 error when invalid value for page", () => {
+          return request(app)
+            .get("/api/articles?page=gobbledegook")
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toBe("Bad request: invalid query input");
+            });
+        });
+        test("status: 400 - returns error when passed invalid value for limit", () => {
+          return request(app)
+            .get("/api/articles?limit=gobbledegook")
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).toBe("Bad request: invalid query input");
+            });
         });
       });
     });

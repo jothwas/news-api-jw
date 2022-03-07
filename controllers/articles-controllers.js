@@ -23,10 +23,10 @@ exports.patchArticlesById = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
-  const { sort_by, order, topic } = req.query;
-  fetchAllArticles(sort_by, order, topic)
-    .then((articles) => {
-      res.status(200).send({ articles });
+  const { sort_by, order, topic, page, limit } = req.query;
+  fetchAllArticles(sort_by, order, topic, page, limit)
+    .then(({ articles, total_count }) => {
+      res.status(200).send({ articles, total_count });
     })
     .catch((err) => next(err));
 };
