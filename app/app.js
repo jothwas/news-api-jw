@@ -7,6 +7,9 @@ const {
   serverErrors,
 } = require("../errors/errors");
 const apiRouter = require("../routes/api-routers");
+const cors = require("cors");
+
+app.use(cors());
 
 app.use(express.json());
 app.use("/api", apiRouter);
